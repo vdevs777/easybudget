@@ -1,5 +1,5 @@
 <center>
-<h1><a href="https://education-at-school.vercel.app/">easybudget 💲</a></h1>
+<h1>>easybudget 💲</h1>
 </center>
 <center>
   <p align="center">
