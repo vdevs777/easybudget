@@ -4,3 +4,7 @@ export function truncateText(text: string, limit: number, suffix = "…") {
 
   return text.slice(0, limit).trimEnd() + suffix;
 }
+
+export function isBlank(value: string | null | undefined): boolean {
+  return !value?.trim();
+}

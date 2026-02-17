@@ -7,6 +7,7 @@ export const styles = StyleSheet.create({
     width: "100%",
     borderWidth: 1,
     borderRadius: 8,
+    marginBottom: 12,
     borderColor: colors.gray[300],
     backgroundColor: colors.gray[100],
     padding: 16,

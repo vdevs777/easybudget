@@ -4,8 +4,11 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { numberToLocale } from "@/utils/number";
 import { Status } from "@/types/enums/status";
 import { Currency } from "../../../../components/Currency";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProps } from "@/routes/StackRoutes";
 
 type BudgetCardData = {
+  id: string;
   title: string;
   customer: string;
   value: number;
@@ -17,8 +20,13 @@ type BudgetCardProps = {
 };
 
 export function BudgetCard({ data }: BudgetCardProps) {
+  const navigation = useNavigation<StackNavigationProps<"home">>();
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.8}>
+    <TouchableOpacity
+      style={styles.container}
+      activeOpacity={0.8}
+      onPress={() => navigation.navigate("budgetView", { id: data.id })}
+    >
       <View style={styles.internalContainer}>
         <Text style={styles.title}>{data.title}</Text>
 

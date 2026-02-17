@@ -8,15 +8,23 @@ import {
   StackRoutesList,
   StackRoutesProps,
 } from "@/routes/StackRoutes";
+import { numberToLocale } from "@/utils/number";
 
-export function Header() {
+type HeaderProps = {
+  draftItems?: number;
+};
+
+export function Header({ draftItems }: HeaderProps) {
   const navigation = useNavigation<StackNavigationProps<"home">>();
 
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.title}>Orçamentos</Text>
-        <Text style={styles.description}>Você tem 1 item em rascunho</Text>
+        <Text style={styles.description}>
+          Você tem {numberToLocale(draftItems)}{" "}
+          {draftItems === 1 ? "item" : "itens"} em rascunho
+        </Text>
       </View>
       <Button
         text="Novo"

@@ -3,11 +3,18 @@
     "name": "orcamento-de-servicos",
     "slug": "orcamento-de-servicos",
     "version": "1.0.0",
-    "plugins": [
-      "expo-font"
-    ],
+    "plugins": ["expo-font"],
     "android": {
-      "package": "com.anonymous.orcamentodeservicos"
+      "package": "com.vdevs777.easybudget",
+      "edgeToEdgeEnabled": true,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#6A46EB"
+      },
+      "ios": {
+        "bundleIdentifier": "com.vdevs777.easybudget",
+        "icon": "./assets/ios-icon.png"
+      }
     }
   }
 }

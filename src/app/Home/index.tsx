@@ -6,12 +6,13 @@ import { colors } from "@/theme/colors";
 import { Filters } from "./components/Filters";
 import { BudgetCard } from "./components/BudgetCard";
 import BottomSheet from "@gorhom/bottom-sheet";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FilterSheet } from "./components/FilterSheet";
 import { Status } from "@/types/enums/status";
 import { BudgetModel, budgetStorage } from "@/storage/budget-storage";
 import { typography } from "@/theme/typography";
 import { Ordering } from "@/types/enums/ordering";
+import { useFocusEffect } from "@react-navigation/native";
 
 export function Home() {
   const [allBudgets, setAllBudgets] = useState<BudgetModel[]>([]);
@@ -86,54 +87,61 @@ export function Home() {
     setBudgets(filtered);
   }
 
-  useEffect(() => {
-    fetch();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetch();
+    }, []),
+  );
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={{ flex: 1, gap: 10 }}>
-        <Header />
-        <Separator color={colors.gray[300]} />
-        <View style={{ padding: 20, gap: 20, width: "100%" }}>
-          <Filters onOpenFilters={handleOpenFilters} onType={handleType} />
-          {isLoadingBudgets ? (
-            <ActivityIndicator
-              style={{ paddingTop: 24 }}
-              size="large"
-              color={colors.purple.base}
-            />
-          ) : (
-            <FlatList
-              data={budgets}
-              ListEmptyComponent={
-                <Text
-                  style={[
-                    typography.text.md,
-                    {
-                      color: colors.gray[400],
-                      textAlign: "center",
-                      paddingTop: 24,
-                    },
-                  ]}
-                >
-                  Nenhum orçamento cadastrado.
-                </Text>
-              }
-              renderItem={({ item }) => (
-                <BudgetCard
-                  data={{
-                    title: item.title,
-                    customer: item.customer,
-                    value: item.totalValue,
-                    status: item.status,
-                  }}
-                />
-              )}
+      {/* Header e Filtros fixos */}
+      <Header
+        draftItems={budgets.filter((b) => b.status === Status.DRAFT).length}
+      />
+      <Separator color={colors.gray[300]} />
+
+      <Filters onOpenFilters={handleOpenFilters} onType={handleType} />
+
+      {isLoadingBudgets ? (
+        <ActivityIndicator
+          style={{ marginTop: 24 }}
+          size="large"
+          color={colors.purple.base}
+        />
+      ) : (
+        <FlatList
+          data={budgets}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+          ListEmptyComponent={
+            <Text
+              style={[
+                typography.text.md,
+                {
+                  color: colors.gray[400],
+                  textAlign: "center",
+                  paddingTop: 24,
+                },
+              ]}
+            >
+              Nenhum orçamento cadastrado.
+            </Text>
+          }
+          renderItem={({ item }) => (
+            <BudgetCard
+              data={{
+                id: item.id,
+                title: item.title,
+                customer: item.customer,
+                value: item.totalValue,
+                status: item.status,
+              }}
             />
           )}
-        </View>
-      </View>
+        />
+      )}
+
       <FilterSheet ref={filterSheetRef} onFilter={handleFilter} />
     </View>
   );

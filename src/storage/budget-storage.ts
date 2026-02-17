@@ -2,8 +2,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Status } from "@/types/enums/status";
 import { Ordering } from "@/types/enums/ordering";
+import { v4 } from "uuid";
 
 const STORAGE_KEY = "@orcamento-de-servicos:budget";
+const COUNTER_KEY = "@orcamento-de-servicos:budget_counter";
 
 export type BudgetModel = {
   id: string;
@@ -26,6 +28,21 @@ export type ServiceModel = {
 };
 
 export type BudgetRequest = Omit<BudgetModel, "id" | "createdAt" | "updatedAt">;
+
+async function generateIncrementId(): Promise<string> {
+  try {
+    const current = await AsyncStorage.getItem(COUNTER_KEY);
+
+    const currentNumber = current ? Number(current) : 0;
+    const nextNumber = currentNumber + 1;
+
+    await AsyncStorage.setItem(COUNTER_KEY, String(nextNumber));
+
+    return String(nextNumber);
+  } catch (error) {
+    throw new Error("BUDGETS_GENERATE_ID: " + error);
+  }
+}
 
 async function get(): Promise<BudgetModel[]> {
   try {
@@ -106,22 +123,22 @@ async function save(items: BudgetModel[]): Promise<void> {
   }
 }
 
-async function add(newItem: BudgetRequest): Promise<BudgetModel[]> {
+async function add(newItem: BudgetRequest): Promise<string> {
   const items = await get();
 
   const mappedNewItem: BudgetModel = {
     ...newItem,
     createdAt: new Date(),
     updatedAt: new Date(),
-    id: crypto.randomUUID(),
+    id: await generateIncrementId(),
   };
 
   const updatedItems = [...items, mappedNewItem];
   await save(updatedItems);
-  return updatedItems;
+  return mappedNewItem.id;
 }
 
-async function duplicateById(id: string): Promise<BudgetModel[]> {
+async function duplicateById(id: string): Promise<string> {
   try {
     const budgets = await get();
 
@@ -135,20 +152,20 @@ async function duplicateById(id: string): Promise<BudgetModel[]> {
 
     const duplicatedBudget: BudgetModel = {
       ...budgetToDuplicate,
-      id: crypto.randomUUID(),
+      id: await generateIncrementId(),
       title: `${budgetToDuplicate.title} (Cópia)`,
       createdAt: now,
       updatedAt: now,
       items: budgetToDuplicate.items.map((item) => ({
         ...item,
-        id: crypto.randomUUID(),
+        id: v4(),
       })),
     };
 
     const updatedBudgets = [...budgets, duplicatedBudget];
     await save(updatedBudgets);
 
-    return updatedBudgets;
+    return duplicatedBudget.id;
   } catch (error) {
     throw new Error("BUDGETS_DUPLICATE: " + error);
   }
@@ -205,12 +222,29 @@ async function deleteById(id: string): Promise<BudgetModel[]> {
   }
 }
 
+async function getById(id: string): Promise<BudgetModel> {
+  try {
+    const budgets = await get();
+
+    const budget = budgets.find((budget) => budget.id === id);
+
+    if (!budget) {
+      throw new Error("Orçamento não encontrado.");
+    }
+
+    return budget;
+  } catch (error) {
+    throw new Error("BUDGETS_GET_BY_ID: " + error);
+  }
+}
+
 export const budgetStorage = {
-  get,
   getByStatusAndOrdering,
-  save,
-  add,
   duplicateById,
-  edit,
   deleteById,
+  getById,
+  save,
+  edit,
+  get,
+  add,
 };

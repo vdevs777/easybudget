@@ -1,11 +1,44 @@
 import { CreateBudgetCard } from "@/components/CreateBudgetCard";
 import { Currency } from "@/components/Currency";
 import { Input } from "@/components/Input";
+import { NumberInput } from "@/components/Input/NumberInput";
+import { ServiceModel } from "@/storage/budget-storage";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
+import { numberToLocale } from "@/utils/number";
+import { useEffect, useMemo, useState } from "react";
 import { Text, View } from "react-native";
 
-export function Investment() {
+type InvestmentProps = {
+  services: ServiceModel[];
+  defaultDiscountPct?: number;
+  onDiscountPctChange: (value: number) => void;
+  onTotalChange: (value: number) => void;
+};
+
+export function Investment({
+  services,
+  onDiscountPctChange,
+  onTotalChange,
+  defaultDiscountPct,
+}: InvestmentProps) {
+  const [discountPct, setDiscountPct] = useState(defaultDiscountPct ?? 0);
+
+  const subtotal = useMemo(() => {
+    return services.reduce(
+      (acc, service) => acc + service.qty * service.price,
+      0,
+    );
+  }, [services]);
+
+  const discountValue = (discountPct / 100) * subtotal;
+  const total = subtotal - discountValue;
+
+  useEffect(() => {
+    onDiscountPctChange(discountPct);
+    onTotalChange(subtotal);
+  }, [discountPct, subtotal]);
+
   return (
     <CreateBudgetCard
       title="Investimento"
@@ -25,9 +58,9 @@ export function Investment() {
               style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
             >
               <Text style={[typography.text.xs, { color: colors.gray[500] }]}>
-                8 itens
+                {services.length} {services.length === 1 ? "item" : "itens"}
               </Text>
-              <Currency value={3847.5} valueStyle={typography.text.sm} />
+              <Currency value={subtotal} valueStyle={typography.text.sm} />
             </View>
           </View>
           <View
@@ -48,11 +81,18 @@ export function Investment() {
               <Text style={[typography.text.sm, { color: colors.gray[700] }]}>
                 Desconto (%)
               </Text>
-              <Input containerStyle={{ height: 32 }} style={{ width: 30 }} />
+              <NumberInput
+                containerStyle={{ height: 32 }}
+                hasStepper={false}
+                value={discountPct}
+                onChange={setDiscountPct}
+                min={0}
+                max={100}
+              />
             </View>
 
             <Currency
-              value={347.5}
+              value={discountValue}
               valueStyle={{
                 ...typography.text.sm,
                 color: colors.danger.base,
@@ -74,18 +114,20 @@ export function Investment() {
               Valor total
             </Text>
             <View style={{ gap: 8, alignItems: "flex-end" }}>
-              <Text
-                style={[
-                  typography.text.xs,
-                  {
-                    color: colors.gray[600],
-                    textDecorationLine: "line-through",
-                  },
-                ]}
-              >
-                R$ 4.050,00
-              </Text>
-              <Currency value={3847.5} />
+              {discountValue > 0 && (
+                <Text
+                  style={[
+                    typography.text.xs,
+                    {
+                      color: colors.gray[600],
+                      textDecorationLine: "line-through",
+                    },
+                  ]}
+                >
+                  R$ {numberToLocale(subtotal)}
+                </Text>
+              )}
+              <Currency value={total} />
             </View>
           </View>
         </View>

@@ -11,7 +11,7 @@ type NumberInputProps = {
   step?: number;
   min?: number;
   max?: number;
-
+  hasStepper?: boolean;
   error?: boolean;
   containerStyle?: ViewStyle;
 };
@@ -24,6 +24,7 @@ export function NumberInput({
   max,
   error,
   containerStyle,
+  hasStepper = true,
 }: NumberInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -57,17 +58,19 @@ export function NumberInput({
         containerStyle,
       ]}
     >
-      <TouchableOpacity
-        onPress={() => handleStepper(-step)}
-        style={styles.stepperButton}
-        activeOpacity={0.7}
-      >
-        <MaterialIcons
-          name="remove"
-          size={20}
-          color={error ? colors.danger.base : colors.purple.base}
-        />
-      </TouchableOpacity>
+      {hasStepper && (
+        <TouchableOpacity
+          onPress={() => handleStepper(-step)}
+          style={styles.stepperButton}
+          activeOpacity={0.7}
+        >
+          <MaterialIcons
+            name="remove"
+            size={20}
+            color={error ? colors.danger.base : colors.purple.base}
+          />
+        </TouchableOpacity>
+      )}
 
       <TextInput
         value={String(value)}
@@ -83,18 +86,19 @@ export function NumberInput({
         textAlign="center"
         selectTextOnFocus
       />
-
-      <TouchableOpacity
-        onPress={() => handleStepper(step)}
-        style={styles.stepperButton}
-        activeOpacity={0.7}
-      >
-        <MaterialIcons
-          name="add"
-          size={20}
-          color={error ? colors.danger.base : colors.purple.base}
-        />
-      </TouchableOpacity>
+      {hasStepper && (
+        <TouchableOpacity
+          onPress={() => handleStepper(step)}
+          style={styles.stepperButton}
+          activeOpacity={0.7}
+        >
+          <MaterialIcons
+            name="add"
+            size={20}
+            color={error ? colors.danger.base : colors.purple.base}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
