@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "orcamento-de-servicos",
-    "slug": "orcamento-de-servicos",
+    "name": "easybudget",
+    "slug": "easybudget",
     "version": "1.0.0",
     "plugins": ["expo-font"],
     "android": {

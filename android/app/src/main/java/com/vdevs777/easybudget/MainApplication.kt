@@ -1,4 +1,4 @@
-package com.anonymous.orcamentodeservicos
+package com.vdevs777.easybudget
 
 import android.app.Application
 import android.content.res.Configuration

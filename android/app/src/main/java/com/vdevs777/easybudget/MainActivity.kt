@@ -1,4 +1,4 @@
-package com.anonymous.orcamentodeservicos
+package com.vdevs777.easybudget
 
 import android.os.Build
 import android.os.Bundle
