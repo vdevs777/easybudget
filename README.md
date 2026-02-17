@@ -1,5 +1,5 @@
 <center>
-<h1>>easybudget 💲</h1>
+<h1>easybudget 💲</h1>
 </center>
 <center>
   <p align="center">
